@@ -1,0 +1,15 @@
+[project]
+name = "fornax-cutouts-example"
+version = "0.1.0"
+description = "Example project for Fornax Cutouts"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fornax-cutouts>=0.1.0",
+]
+
+[tool.setuptools]
+packages = ["cutouts"]
+
+[tool.uv.sources]
+fornax-cutouts = { path = "../fornax-cutouts", editable = true }

@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "ECRAuth"
+    },
+    {
+      "Action": [
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability"
+      ],
+      "Resource": [
+        "arn:aws:ecr:us-east-1:${AccountID}:repository/nasa-fornax-cutouts*"
+      ],
+      "Effect": "Allow",
+      "Sid": "Pull"
+    },
+    {
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*"
+      ],
+      "Effect": "Allow",
+      "Sid": "LogsAccess"
+    }
+  ]
+}

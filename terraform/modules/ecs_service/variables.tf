@@ -1,7 +1,7 @@
 variable "project_name" {
   type        = string
   description = "The name of the project"
-  default     = "fornax-cutouts"
+  default     = "nasa-fornax-cutouts"
 }
 
 variable "env" {

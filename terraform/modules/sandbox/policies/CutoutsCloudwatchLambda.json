@@ -1,0 +1,40 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:logs:us-east-1:${AccountID}:log-group:/nasa-fornax-cutouts-*",
+      "Sid": "Logs"
+    },
+    {
+      "Action": [
+        "cloudwatch:PutMetricData"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "FornaxCutouts"
+        }
+      },
+      "Effect": "Allow",
+      "Resource": "*",
+      "Sid": "CloudWatchMetrics"
+    },
+    {
+      "Action": [
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+        "ec2:AssignPrivateIpAddresses",
+        "ec2:UnassignPrivateIpAddresses"
+      ],
+      "Effect": "Allow",
+      "Resource": "*",
+      "Sid": "VpcNetworking"
+    }
+  ]
+}

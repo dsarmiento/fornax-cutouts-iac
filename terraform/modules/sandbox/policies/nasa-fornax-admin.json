@@ -1,0 +1,258 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "FornaxAutoscaleMetric",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:TagResource",
+        "lambda:GetFunction",
+        "lambda:ListVersionsByFunction",
+        "lambda:GetFunctionCodeSigningConfig",
+        "lambda:DeleteFunction",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:GetPolicy",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:UpdateFunctionCode",
+        "events:TagResource",
+        "events:PutRule",
+        "events:DescribeRule",
+        "events:ListTagsForResource",
+        "events:DeleteRule",
+        "events:PutTargets",
+        "events:ListTargetsByRule",
+        "events:RemoveTargets",
+        "cloudwatch:PutMetricAlarm",
+        "cloudwatch:DescribeAlarms",
+        "cloudwatch:DeleteAlarms"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "iam:GetPolicy",
+        "iam:GetPolicyVersion",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListPolicyVersions",
+        "iam:ListRolePolicies"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "IAM"
+    },
+    {
+      "Action": [
+        "iam:PassRole",
+        "iam:TagRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::${AccountID}:role/FornaxCutouts*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FornaxCutoutsRolePermissions"
+    },
+    {
+      "Condition": {
+        "StringLike": {
+          "iam:AWSServiceName": [
+            "ecs.amazonaws.com",
+            "lambda.amazonaws.com",
+            "elasticache.amazonaws.com",
+            "elasticloadbalancing.amazonaws.com"
+          ]
+        }
+      },
+      "Action": [
+        "iam:CreateServiceLinkedRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::${AccountID}:role/*/*.amazonaws.com/*"
+      ],
+      "Effect": "Allow",
+      "Sid": "CreateServiceLinkedRoles"
+    },
+    {
+      "Action": [
+        "application-autoscaling:DeleteScalingPolicy",
+        "application-autoscaling:DeregisterScalableTarget",
+        "application-autoscaling:DescribeScalableTargets",
+        "application-autoscaling:DescribeScalingPolicies",
+        "application-autoscaling:ListTagsForResource",
+        "application-autoscaling:PutScalingPolicy",
+        "application-autoscaling:RegisterScalableTarget",
+        "application-autoscaling:TagResource",
+        "application-autoscaling:UntagResource"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "AutoscalingActions"
+    },
+    {
+      "Action": [
+        "s3:Get*",
+        "s3:DeleteObject",
+        "s3:DeleteObjectVersion",
+        "s3:PutObject",
+        "s3:*multipart*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::fornax-cutouts-sandbox-tf-state/*",
+        "arn:aws:s3:::fornax-cutouts-sandbox-stage/*"
+      ],
+      "Effect": "Allow",
+      "Sid": "S3"
+    },
+    {
+      "Action": [
+        "s3:List*"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "S3List"
+    },
+    {
+      "Action": [
+        "elasticache:CreateCacheSubnetGroup",
+        "elasticache:CreateReplicationGroup",
+        "elasticache:DescribeCacheSubnetGroups",
+        "elasticache:ListTagsForResource",
+        "elasticache:AddTagsToResource",
+        "elasticache:DeleteCacheSubnetGroup",
+        "elasticache:DescribeReplicationGroups",
+        "elasticache:DescribeCacheClusters",
+        "elasticache:DeleteReplicationGroup",
+        "elasticache:RemoveTagsFromResource"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "ElastiCacheActions"
+    },
+    {
+      "Action": [
+        "ec2:AuthorizeSecurityGroupEgress",
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:CreateSecurityGroup",
+        "ec2:CreateTags",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DeleteTags",
+        "ec2:Describe*",
+        "ec2:GetSecurityGroupsForVpc",
+        "ec2:RevokeSecurityGroupEgress",
+        "ec2:DeleteNetworkInterface"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "EC2Actions"
+    },
+    {
+      "Action": [
+        "ecs:CreateCluster",
+        "ecs:CreateService",
+        "ecs:DeleteCluster",
+        "ecs:DeleteService",
+        "ecs:DeregisterTaskDefinition",
+        "ecs:DescribeClusters",
+        "ecs:DescribeServices",
+        "ecs:DescribeTaskDefinition",
+        "ecs:ListTagsForResource",
+        "ecs:RegisterTaskDefinition",
+        "ecs:TagResource",
+        "ecs:UntagResource",
+        "ecs:UpdateService"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "ECSActions"
+    },
+    {
+      "Action": [
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:CreateListener",
+        "elasticloadbalancing:CreateLoadBalancer",
+        "elasticloadbalancing:CreateRule",
+        "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DeleteListener",
+        "elasticloadbalancing:DeleteLoadBalancer",
+        "elasticloadbalancing:DeleteRule",
+        "elasticloadbalancing:DeleteTargetGroup",
+        "elasticloadbalancing:DescribeListenerAttributes",
+        "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeLoadBalancerAttributes",
+        "elasticloadbalancing:DescribeLoadBalancers",
+        "elasticloadbalancing:DescribeRules",
+        "elasticloadbalancing:DescribeTags",
+        "elasticloadbalancing:DescribeTargetGroupAttributes",
+        "elasticloadbalancing:DescribeTargetGroups",
+        "elasticloadbalancing:ModifyLoadBalancerAttributes",
+        "elasticloadbalancing:ModifyTargetGroupAttributes",
+        "elasticloadbalancing:RemoveTags"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "ELBv2Actions"
+    },
+    {
+      "Action": [
+        "cloudwatch:List*",
+        "logs:List*"
+      ],
+      "Resource": "*",
+      "Effect": "Allow",
+      "Sid": "CloudWatchReadActions"
+    },
+    {
+      "Action": [
+        "cloudwatch:StartMetricStreams",
+        "cloudwatch:StopMetricStreams"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:*",
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:*:*"
+      ],
+      "Effect": "Allow",
+      "Sid": "CloudWatchMetricsActions"
+    },
+    {
+      "Action": [
+        "cloudwatch:Describe*",
+        "cloudwatch:Get*",
+        "logs:Describe*",
+        "logs:FilterLogEvents",
+        "logs:Get*",
+        "logs:ListTagsForResource",
+        "logs:StartLiveTail",
+        "logs:StartQuery",
+        "logs:StopLiveTail",
+        "logs:StopQuery",
+        "logs:Tag*",
+        "logs:TestMetricFilter",
+        "logs:Untag*"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:*",
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:*:*"
+      ],
+      "Effect": "Allow",
+      "Sid": "LogsReadActions"
+    },
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DeleteLogGroup",
+        "logs:PutLogEvents",
+        "logs:PutRetentionPolicy"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*",
+        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*:*"
+      ],
+      "Effect": "Allow",
+      "Sid": "LogsMgmtActions"
+    }
+  ]
+}

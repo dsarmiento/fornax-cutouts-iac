@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectAttributes",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::fornax-cutouts-sandbox-stage/metadata/*",
+        "arn:aws:s3:::fornax-cutouts-sandbox-stage"
+      ],
+      "Effect": "Allow",
+      "Sid": "ReadOnlyObjects"
+    },
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectAttributes",
+        "s3:PutObject",
+        "s3:ListBucket",
+        "s3:*multipart*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::fornax-cutouts-sandbox-stage/cutouts/*"
+      ],
+      "Effect": "Allow",
+      "Sid": "FullAccessCutoutsPrefix"
+    }
+  ]
+}

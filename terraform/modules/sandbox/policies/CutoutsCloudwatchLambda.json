@@ -8,7 +8,7 @@
         "logs:PutLogEvents"
       ],
       "Effect": "Allow",
-      "Resource": "arn:aws:logs:us-east-1:${AccountID}:log-group:/nasa-fornax-cutouts-*",
+      "Resource": "arn:aws:logs:${aws_region}:${account_id}:log-group:/${project_name}-*",
       "Sid": "Logs"
     },
     {

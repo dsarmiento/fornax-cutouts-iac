@@ -50,7 +50,7 @@
         "iam:TagRole"
       ],
       "Resource": [
-        "arn:aws:iam::${AccountID}:role/FornaxCutouts*"
+        "arn:aws:iam::${account_id}:role/FornaxCutouts*"
       ],
       "Effect": "Allow",
       "Sid": "FornaxCutoutsRolePermissions"
@@ -70,7 +70,7 @@
         "iam:CreateServiceLinkedRole"
       ],
       "Resource": [
-        "arn:aws:iam::${AccountID}:role/*/*.amazonaws.com/*"
+        "arn:aws:iam::${account_id}:role/*/*.amazonaws.com/*"
       ],
       "Effect": "Allow",
       "Sid": "CreateServiceLinkedRoles"
@@ -100,8 +100,7 @@
         "s3:*multipart*"
       ],
       "Resource": [
-        "arn:aws:s3:::fornax-cutouts-sandbox-tf-state/*",
-        "arn:aws:s3:::fornax-cutouts-sandbox-stage/*"
+        "arn:aws:s3:::{stage_bucket_name}/*"
       ],
       "Effect": "Allow",
       "Sid": "S3"
@@ -210,8 +209,8 @@
         "cloudwatch:StopMetricStreams"
       ],
       "Resource": [
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:*",
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:*:*"
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:*",
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:*:*"
       ],
       "Effect": "Allow",
       "Sid": "CloudWatchMetricsActions"
@@ -233,8 +232,8 @@
         "logs:Untag*"
       ],
       "Resource": [
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:*",
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:*:*"
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:*",
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:*:*"
       ],
       "Effect": "Allow",
       "Sid": "LogsReadActions"
@@ -248,8 +247,8 @@
         "logs:PutRetentionPolicy"
       ],
       "Resource": [
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*",
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*:*"
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:/*{project_name}*",
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:/*{project_name}*:*"
       ],
       "Effect": "Allow",
       "Sid": "LogsMgmtActions"

@@ -8,8 +8,8 @@
         "s3:ListBucket"
       ],
       "Resource": [
-        "arn:aws:s3:::fornax-cutouts-sandbox-stage/metadata/*",
-        "arn:aws:s3:::fornax-cutouts-sandbox-stage"
+        "arn:aws:s3:::${stage_bucket_name}/metadata/*",
+        "arn:aws:s3:::${stage_bucket_name}"
       ],
       "Effect": "Allow",
       "Sid": "ReadOnlyObjects"
@@ -23,7 +23,7 @@
         "s3:*multipart*"
       ],
       "Resource": [
-        "arn:aws:s3:::fornax-cutouts-sandbox-stage/cutouts/*"
+        "arn:aws:s3:::${stage_bucket_name}/cutouts/*"
       ],
       "Effect": "Allow",
       "Sid": "FullAccessCutoutsPrefix"

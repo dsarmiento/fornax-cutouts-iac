@@ -18,7 +18,7 @@
         "ecr:BatchCheckLayerAvailability"
       ],
       "Resource": [
-        "arn:aws:ecr:us-east-1:${AccountID}:repository/nasa-fornax-cutouts*"
+        "arn:aws:ecr:${aws_region}:${account_id}:repository/${project_name}*"
       ],
       "Effect": "Allow",
       "Sid": "Pull"
@@ -29,7 +29,7 @@
         "logs:PutLogEvents"
       ],
       "Resource": [
-        "arn:aws:logs:us-east-1:${AccountID}:log-group:/*nasa-fornax-cutouts*"
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:/*${project_name}*"
       ],
       "Effect": "Allow",
       "Sid": "LogsAccess"

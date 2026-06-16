@@ -33,6 +33,7 @@ module "sandbox" {
   env          = local.env
   project_name = local.project_name
   account_id   = local.account_id
+  aws_region   = local.aws_region
 
   num_subnets   = 2  # The number of public and private subnets to create
   subnet_prefix = 27 # The CIDR prefix length for each subnet (e.g., 27 for /27 = 32 addresses)

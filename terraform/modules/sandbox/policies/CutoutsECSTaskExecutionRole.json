@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Effect": "Allow",
+      "Sid": "ECRAuth"
+    },
+    {
+      "Action": [
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability"
+      ],
+      "Resource": [
+        "arn:aws:ecr:${aws_region}:${account_id}:repository/${project_name}*"
+      ],
+      "Effect": "Allow",
+      "Sid": "Pull"
+    },
+    {
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": [
+        "arn:aws:logs:${aws_region}:${account_id}:log-group:/*${project_name}*"
+      ],
+      "Effect": "Allow",
+      "Sid": "LogsAccess"
+    }
+  ]
+}

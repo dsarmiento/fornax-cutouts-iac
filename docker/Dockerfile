@@ -1,5 +1,5 @@
 ####
-FROM ghcr.io/astral-sh/uv:python3.12-trixie AS builder
+FROM ghcr.io/astral-sh/uv:python3.13-trixie AS builder
 
 # Fornax Cutouts repository organization and branch to clone, currently needed until the Fornax Cutouts package is published to PyPI
 ARG FORNAX_CUTOUTS_REPO_ORG=dsarmiento
@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 ####
-FROM python:3.12-trixie
+FROM python:3.13-trixie
 
 # Update the base image and clean up
 RUN apt-get update \
@@ -44,7 +44,7 @@ COPY --chown=cutouts:cutouts docker/entrypoint.sh /opt/cutouts
 # Set environment variables for the project
 ENV PATH="/opt/cutouts/.venv/bin:$PATH" \
     PYTHONPATH=/opt/cutouts \
-    CUTOUTS__SOURCE_PATH=/opt/cutouts/cutouts/missions
+    CUTOUTS__SOURCE_PATH=/opt/cutouts/cutouts/sources
 
 # Set the user and working directory for the project
 USER cutouts

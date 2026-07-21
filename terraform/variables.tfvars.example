@@ -1,0 +1,8 @@
+# Copy to variables.tfvars and adjust for your environment.
+#
+# project_name must match --project-name in tools/build_images.sh (ECR repo: {project_name}-service).
+# project_name and env are limited to 16 and 4 characters respectively (see variables.tf).
+
+env          = "dev"
+project_name = "fornax-cutouts"
+aws_region   = "us-east-1"

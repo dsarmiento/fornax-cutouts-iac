@@ -1,96 +1,94 @@
-# Fornax Cutouts - IaC Example
+# Fornax Cutouts — IaC example
 
-> **Work in progress.** This is a barebones example project demonstrating how to implement a mission source for [fornax-cutouts](https://github.com/dsarmiento/fornax-cutouts) and deploy it on AWS using the provided Terraform modules. Neither the example source nor the IaC are production-ready.
+Example project showing how to implement mission sources for [fornax-cutouts](https://github.com/dsarmiento/fornax-cutouts)
+and deploy them on AWS with Terraform. Use it as a starting point for a new cutout service;
+the included example source and infrastructure are not production-hardened.
 
 ---
 
 ## Repository layout
 
 ```text
-cutouts/           # Example mission source package
+cutouts/                  # Your mission source package
   sources/
-    example.py     # ExampleSource implementation
-docker/            # Dockerfile and entrypoint for the service
-terraform/         # Terraform configuration
-  main.tf          # Root module with inline placeholder values
+    example.py            # Reference AbstractMissionSource implementation
+docker/
+  Dockerfile              # Multi-stage image: fornax-cutouts + cutouts/
+  entrypoint.sh           # fornax-cutouts CLI entrypoint
+terraform/
+  main.tf                 # Root module (sandbox + fornax_cutouts)
+  deploy.sh               # SSO login + terraform apply with image tag
+  variables.tfvars        # Environment-specific values (not committed)
   modules/
-    ecs_service/   # Reusable ECS service module
-    fornax_cutouts/# Top-level module (ECS cluster, ALB, Elasticache, workers)
+    sandbox/              # VPC, IAM, ECR, S3 stage bucket
+    fornax_cutouts/       # ECS cluster, ALB, ElastiCache, services
+    ecs_service/          # Reusable Fargate service module
+tools/
+  build_images.sh         # Build and optionally push to ECR
+  push_and_deploy.sh      # Build, push, and terraform deploy in one step
+docs/
+  DEPLOYMENT.md           # Full AWS deployment walkthrough
 ```
 
 ---
 
-## Example source
+## Documentation
 
-`cutouts/sources/example.py` contains a minimal `ExampleSource` that:
-
-- Registers itself with the `cutout_registry` via `@cutout_registry.register_source()`.
-- Implements `validate_request` and `get_filenames`.
-- Uses a placeholder filename template — no real data access is performed.
-
-It is intended as a starting point; the `get_filenames` logic, metadata values, and any mission-specific parameters all need to be replaced with real implementations.
+| Guide                                          | Description                                             |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| **[Deployment](docs/DEPLOYMENT.md)**           | Prerequisites, AWS SSO setup, Terraform steps, scripts   |
 
 ---
 
-## Running the example
+## Quick start (local)
 
-The project uses [uv](https://docs.astral.sh/uv/) for dependency management. `fornax-cutouts` is currently not published to PyPI, so it is expected to be checked out as a sibling directory (`../fornax-cutouts`).
+This project uses [uv](https://docs.astral.sh/uv/). Clone [fornax-cutouts](https://github.com/dsarmiento/fornax-cutouts)
+next to this repo (`../fornax-cutouts`) for editable local installs.
 
 ```bash
-# Install dependencies (creates .venv automatically)
 uv sync
 
-# Run the fornax-cutouts CLI with the example source loaded
-uv run fornax-cutouts --help
-```
-
-Set `CUTOUTS__SOURCE_PATH` to the directory containing your source modules if it differs from the default:
-
-```bash
 CUTOUTS__SOURCE_PATH=./cutouts/sources uv run fornax-cutouts --help
 ```
 
 ---
 
-## Docker
+## Deploy to AWS (summary)
+
+Deployments follow this order:
+
+1. **Sandbox prerequisites** — `./terraform/deploy.sh -- -target module.sandbox`
+2. **Build and push Docker image** — `./tools/build_images.sh --profile … --push`
+3. **Deploy the service** — `./terraform/deploy.sh` or `./tools/push_and_deploy.sh`
+
+For full instructions, configuration options, and troubleshooting, see **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
+
+Routine updates after initial setup:
 
 ```bash
-docker build \
-  --build-arg FORNAX_CUTOUTS_REPO_ORG=dsarmiento \
-  --build-arg FORNAX_CUTOUTS_REPO_BRANCH=main \
-  -t fornax-cutouts-example \
-  -f docker/Dockerfile .
-
-docker run --rm fornax-cutouts-example help
+./tools/push_and_deploy.sh --profile your-sso-profile
 ```
-
-The image clones `fornax-cutouts` from GitHub at build time because the package is not yet on PyPI.
 
 ---
 
-## Terraform / IaC
-
-> **Semi-functional.** The Terraform modules provision the core AWS infrastructure (ECS cluster, Fargate services, ALB, Elasticache), but several resources are expected to be pre-provisioned outside of this repository as part of the broader deployment process. Applying without those prerequisites will fail.
-
-### Pre-provisioned prerequisites
-
-The following must exist before running `terraform apply`:
-
-| Resource                               | Notes                                                 |
-| -------------------------------------- | ----------------------------------------------------- |
-| VPC, public/private subnets            | Set in `network` block in `main.tf`                   |
-| ACM certificate                        | Optional; required for HTTPS on the ALB               |
-| Route53 hosted zone                    | Optional; required for DNS record creation            |
-| IAM role `CutoutsBackendECSTaskRole`   | Task role for the cutouts service                     |
-| IAM role `CutoutsECSTaskExecutionRole` | ECS task execution role                               |
-| ECR repository / image                 | `image_url` in `main.tf` must point to a pushed image |
-
-### Apply
-
-Update the placeholder values in `terraform/main.tf` (marked with `# TODO`), then:
+## Docker (manual build)
 
 ```bash
-cd terraform
-terraform init
-terraform apply
+docker build \
+  --platform linux/arm64 \
+  -f docker/Dockerfile \
+  -t fornax-cutouts-service:latest \
+  --build-arg FORNAX_CUTOUTS_REPO_BRANCH=main \
+  .
+
+docker run --rm fornax-cutouts-service:latest help
 ```
+
+The image clones fornax-cutouts from GitHub, installs this project's `cutouts/` package, and sets `CUTOUTS__SOURCE_PATH`
+to `/opt/cutouts/cutouts/sources`. See [Container image](docs/DEPLOYMENT.md#container-image) for details.
+
+---
+
+## License
+
+See [LICENSE](LICENSE).

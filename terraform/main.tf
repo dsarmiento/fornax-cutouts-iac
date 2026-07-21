@@ -8,23 +8,41 @@ terraform {
     }
   }
 
-  # TODO: replace with your backend configuration
-  backend "local" {}
+  # TODO: replace with your Terraform backend configuration (e.g. S3 + DynamoDB)
+  backend "local" {
+    path = "./terraform.tfstate"
+  }
 }
 
 
 provider "aws" {
-  region = "us-east-1" # TODO: replace with your region
+  region = var.aws_region
+}
+
+
+module "sandbox" {
+  source = "./modules/sandbox"
+
+  env          = var.env
+  project_name = var.project_name
+  account_id   = var.account_id
+  aws_region   = var.aws_region
+
+  num_subnets   = 2  # The number of public and private subnets to create
+  subnet_prefix = 27 # The CIDR prefix length for each subnet (e.g., 27 for /27 = 32 addresses)
+
+  cutout_prefix_ttl_days = 1 # The number of days to keep cutouts in the stage bucket
 }
 
 
 module "fornax_cutouts" {
   source = "./modules/fornax_cutouts"
 
-  project_name = "fornax-cutouts" # TODO: replace with your project name
-  account_id   = "123456789012"   # TODO: replace with your AWS account ID
-  aws_region   = "us-east-1"      # TODO: replace with your region
-  env          = "dev"            # TODO: replace with your environment name
+  env          = var.env
+  project_name = var.project_name
+
+  account_id = var.account_id
+  aws_region = var.aws_region
 
   ecs_cluster = {
     container_insights    = "disabled"
@@ -32,11 +50,10 @@ module "fornax_cutouts" {
   }
 
   network = {
-    vpc_id                      = "vpc-00000000000000000"                                                               # TODO: replace with your VPC ID
-    public_subnet_ids           = ["subnet-00000000000000000"]                                                          # TODO: replace with your public subnet IDs
-    private_subnet_ids          = ["subnet-00000000000000000"]                                                          # TODO: replace with your private subnet IDs
-    allowed_ingress_cidr_blocks = ["0.0.0.0/0"]                                                                         # TODO: restrict to your IP ranges
-    acm_certificate_arn         = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000" # TODO: replace or set to null
+    vpc_id                      = module.sandbox.vpc_id             # TODO: replace with your VPC ID
+    public_subnet_ids           = module.sandbox.public_subnet_ids  # TODO: replace with your public subnet IDs
+    private_subnet_ids          = module.sandbox.private_subnet_ids # TODO: replace with your private subnet IDs
+    allowed_ingress_cidr_blocks = ["0.0.0.0/0"]                     # TODO: restrict to your IP ranges if needed, leave blank for fully public
   }
 
   elasticache = {
@@ -44,9 +61,9 @@ module "fornax_cutouts" {
   }
 
   cutouts_service = {
-    image_url          = "123456789012.dkr.ecr.us-east-1.amazonaws.com/fornax-cutouts-example:latest" # TODO: replace with your image URI
-    task_role_arn      = "arn:aws:iam::123456789012:role/CutoutsBackendECSTaskRole"                   # TODO: replace with your task role ARN
-    execution_role_arn = "arn:aws:iam::123456789012:role/CutoutsECSTaskExecutionRole"                 # TODO: replace with your execution role ARN
+    image_url          = "${module.sandbox.backend_repo_url}:${var.image_tag}"
+    task_role_arn      = module.sandbox.role_arns.backend_ecs_task   # TODO: replace with your task role ARN
+    execution_role_arn = module.sandbox.role_arns.ecs_task_execution # TODO: replace with your execution role ARN
 
     worker_settings = {
       batch_size_per_worker = 25
@@ -63,7 +80,7 @@ module "fornax_cutouts" {
       level          = "INFO"
     }
 
-    storage_prefix = "s3://my-bucket/cutouts" # TODO: replace with your S3 prefix
+    storage_prefix = "s3://${module.sandbox.stage_bucket_name}/cutouts" # TODO: replace with your S3 prefix
 
     extra_env_vars = []
 

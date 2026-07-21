@@ -39,7 +39,7 @@ locals {
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "log_group" {
-  name              = "/${var.project_name}-${var.env}-${var.service.name}"
+  name              = "/${var.project_name}/${var.env}/ecs/${var.service.name}"
   retention_in_days = var.service.log_retention_days
 }
 

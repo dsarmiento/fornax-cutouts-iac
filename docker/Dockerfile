@@ -44,7 +44,7 @@ COPY --chown=cutouts:cutouts docker/entrypoint.sh /opt/cutouts
 # Set environment variables for the project
 ENV PATH="/opt/cutouts/.venv/bin:$PATH" \
     PYTHONPATH=/opt/cutouts \
-    CUTOUTS__SOURCE_PATH=/opt/cutouts/cutouts/missions
+    CUTOUTS__SOURCE_PATH=/opt/cutouts/cutouts/sources
 
 # Set the user and working directory for the project
 USER cutouts

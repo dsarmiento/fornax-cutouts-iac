@@ -4,16 +4,11 @@ locals {
 
 # Application Load Balancer
 resource "aws_lb" "alb" {
-  name               = "${var.project_name}-${var.env}-load-balancer"
+  name               = "${var.project_name}-${var.env}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = var.network.public_subnet_ids
-
-  # This resource requires ITSD intervention to be connected to the WAF, don't destroy it
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 # HTTP Listener - redirects to HTTPS if HTTPS is enabled

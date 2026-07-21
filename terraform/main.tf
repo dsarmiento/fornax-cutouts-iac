@@ -8,32 +8,25 @@ terraform {
     }
   }
 
-  # TODO: replace with your Terraform backend configuration
-  backend "local" {}
+  # TODO: replace with your Terraform backend configuration (e.g. S3 + DynamoDB)
+  backend "local" {
+    path = "./terraform.tfstate"
+  }
 }
 
 
 provider "aws" {
-  region = "us-east-1" # TODO: replace with your region
-}
-
-
-locals {
-  env          = "dev"                 # TODO: replace with your environment name
-  project_name = "nasa-fornax-cutouts" # TODO: replace with your project name
-
-  account_id = "123456789012" # TODO: replace with your AWS account ID
-  aws_region = "us-east-1"    # TODO: replace with your region
+  region = var.aws_region
 }
 
 
 module "sandbox" {
   source = "./modules/sandbox"
 
-  env          = local.env
-  project_name = local.project_name
-  account_id   = local.account_id
-  aws_region   = local.aws_region
+  env          = var.env
+  project_name = var.project_name
+  account_id   = var.account_id
+  aws_region   = var.aws_region
 
   num_subnets   = 2  # The number of public and private subnets to create
   subnet_prefix = 27 # The CIDR prefix length for each subnet (e.g., 27 for /27 = 32 addresses)
@@ -45,11 +38,11 @@ module "sandbox" {
 module "fornax_cutouts" {
   source = "./modules/fornax_cutouts"
 
-  env          = local.env
-  project_name = local.project_name
+  env          = var.env
+  project_name = var.project_name
 
-  account_id = local.account_id
-  aws_region = local.aws_region
+  account_id = var.account_id
+  aws_region = var.aws_region
 
   ecs_cluster = {
     container_insights    = "disabled"
@@ -68,7 +61,7 @@ module "fornax_cutouts" {
   }
 
   cutouts_service = {
-    image_url          = module.sandbox.backend_repo_url             # TODO: replace with your image URI
+    image_url          = "${module.sandbox.backend_repo_url}:${var.image_tag}"
     task_role_arn      = module.sandbox.role_arns.backend_ecs_task   # TODO: replace with your task role ARN
     execution_role_arn = module.sandbox.role_arns.ecs_task_execution # TODO: replace with your execution role ARN
 

@@ -77,5 +77,5 @@ eval "$(aws configure export-credentials --profile "${AWS_PROFILE}" --format env
 ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text --profile "$AWS_PROFILE")
 
 echo "Running Terraform apply for profile: $AWS_PROFILE (image_tag=${TAG})"
-terraform -chdir="$SCRIPT_DIR" init -reconfigure -backend-config="path=./terraform.tfstate"
+terraform -chdir="$SCRIPT_DIR" init -input=false
 terraform -chdir="$SCRIPT_DIR" apply -var-file="./variables.tfvars" -var "account_id=${ACCOUNT_ID}" -var "image_tag=${TAG}" ${EXTRA_ARGS[@]+"${EXTRA_ARGS[@]}"}
